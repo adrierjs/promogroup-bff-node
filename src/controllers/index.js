@@ -4,7 +4,7 @@ class IndexController {
 
   async getNotebooks(req, res) {
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
@@ -16,7 +16,7 @@ class IndexController {
 
   async getCelulares(req, res){
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
@@ -28,7 +28,7 @@ class IndexController {
 
   async getTvs(req, res){
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
@@ -40,7 +40,7 @@ class IndexController {
 
   async getGeladeiras(req, res) {
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
@@ -52,7 +52,7 @@ class IndexController {
 
   async getArcondicionados(req, res) {
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
@@ -64,7 +64,7 @@ class IndexController {
 
   async getLivros(req, res) {
     await this.executeQuery(req, res, `
-    SELECT *
+    SELECT dados_json
     FROM DATA_SCRAPING
     WHERE dados_json IS NOT NULL
       AND CAST(dados_json AS jsonb) <> '[]'::jsonb
