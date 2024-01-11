@@ -50,6 +50,30 @@ class IndexController {
     `);
   }
 
+  async getArcondicionados(req, res) {
+    await this.executeQuery(req, res, `
+    SELECT *
+    FROM DATA_SCRAPING
+    WHERE dados_json IS NOT NULL
+      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
+      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'ar') > 0
+    ORDER BY created_at DESC
+    LIMIT 1;
+    `);
+  }
+
+  async getLivros(req, res) {
+    await this.executeQuery(req, res, `
+    SELECT *
+    FROM DATA_SCRAPING
+    WHERE dados_json IS NOT NULL
+      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
+      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'livros') > 0
+    ORDER BY created_at DESC
+    LIMIT 1;
+    `);
+  }
+
   async executeQuery(req, res, query) {
     try {
       const { clienteBancoDeDados } = req;
