@@ -3,15 +3,15 @@ class IndexController {
 
   async getProductsByCategory(req, res, category) {
     const query = `
-      SELECT dados_json
-      FROM DATA_SCRAPING
-      WHERE EXISTS (
+    SELECT dados_json
+    FROM data_scraping
+    WHERE EXISTS (
         SELECT 1
         FROM jsonb_array_elements(dados_json) AS elem
         WHERE elem->>'category' = $1
-      )
-      ORDER BY created_at DESC
-      LIMIT 1;
+    )
+    ORDER BY created_at DESC
+    LIMIT 1;
     `;
 
     await this.executeQuery(req, res, query, [category]);
@@ -47,7 +47,7 @@ class IndexController {
       if (clienteBancoDeDados) {
         const resultadoConsulta = await clienteBancoDeDados.query(query, params);
 
-        res.status(200).json(resultadoConsulta.rows);
+        res.status(200).json(resultadoConsulta.rows[0].dados_json);
       } else {
         res.status(500).send('Erro: Cliente do banco de dados não disponível.');
       }
