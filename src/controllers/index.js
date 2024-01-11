@@ -1,88 +1,54 @@
-// indexController.js
 class IndexController {
   constructor() {}
 
+  async getProductsByCategory(req, res, category) {
+    const query = `
+      SELECT dados_json
+      FROM DATA_SCRAPING
+      WHERE EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements(dados_json) AS elem
+        WHERE elem->>'category' = $1
+      )
+      ORDER BY created_at DESC
+      LIMIT 1;
+    `;
+
+    await this.executeQuery(req, res, query, [category]);
+  }
+
   async getNotebooks(req, res) {
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'notebook') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+    await this.getProductsByCategory(req, res, 'notebook');
   }
 
-  async getCelulares(req, res){
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'celular') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+  async getCelulares(req, res) {
+    await this.getProductsByCategory(req, res, 'celular');
   }
 
-  async getTvs(req, res){
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'tv') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+  async getTvs(req, res) {
+    await this.getProductsByCategory(req, res, 'tv');
   }
 
   async getGeladeiras(req, res) {
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'geladeira') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+    await this.getProductsByCategory(req, res, 'geladeira');
   }
 
   async getArcondicionados(req, res) {
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'ar') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+    await this.getProductsByCategory(req, res, 'ar');
   }
 
   async getLivros(req, res) {
-    await this.executeQuery(req, res, `
-    SELECT dados_json
-    FROM DATA_SCRAPING
-    WHERE dados_json IS NOT NULL
-      AND CAST(dados_json AS jsonb) <> '[]'::jsonb
-      AND (SELECT COUNT(*) FROM jsonb_array_elements(dados_json) as product WHERE product->>'category' = 'livros') > 0
-    ORDER BY created_at DESC
-    LIMIT 1;
-    `);
+    await this.getProductsByCategory(req, res, 'livros');
   }
 
-  async executeQuery(req, res, query) {
+  async executeQuery(req, res, query, params) {
     try {
       const { clienteBancoDeDados } = req;
       if (clienteBancoDeDados) {
-        const resultadoConsulta = await clienteBancoDeDados.query(query);
+        const resultadoConsulta = await clienteBancoDeDados.query(query, params);
 
         res.status(200).json(resultadoConsulta.rows);
-      }
-      else {
+      } else {
         res.status(500).send('Erro: Cliente do banco de dados não disponível.');
       }
     } catch (error) {
